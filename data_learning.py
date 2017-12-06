@@ -18,8 +18,10 @@ OUTPUT_TEMPLATE = (
 
 def plot_graph(df, att):
     #plots the swarmplot of a certain attribut across all moves
-    sns.stripplot(x='move', y=att, data=df, jitter=True);
-    plt.show()
+    g = sns.PairGrid(df, x_vars=['move'], y_vars=[att+'0', att+'1', att+'2', att+'3'], aspect=1.5, size=2.5)
+    g.map(sns.stripplot, jitter=True, palette = 'deep')
+
+    plt.savefig(att+"coeffs.png")
 
 def main():
     my_filename = "raw_accel.csv"
@@ -28,7 +30,7 @@ def main():
     moves = pd.DataFrame(clean_data(my_filename, None, None))
     X = moves[moves.columns[2:]]
     y = moves['move']
-    
+#    plot_graph(moves, 'z')
     X_train, X_test, y_train, y_test = train_test_split(X, y)
     neighbours = 15
     knn_model = KNeighborsClassifier(n_neighbors=neighbours)
