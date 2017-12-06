@@ -25,6 +25,7 @@ def rename(m):
     return string
 
 def smoothing(m):
+    #not used as it did not improve performance, left for referance only
     b, a = signal.butter(3, 0.01, btype='lowpass', analog=False)
     low_x = signal.filtfilt(b, a, m['x'])
     low_y = signal.filtfilt(b, a, m['y'])
@@ -35,7 +36,6 @@ def smoothing(m):
     if(np.isnan(m['x']).any() | np.isnan(m['y']).any() | np.isnan(m['x']).any()):
         m['move'] = None 
         return 
-#    print(m)
     return m
 
 def polyfitting(m):
@@ -45,6 +45,7 @@ def polyfitting(m):
     return m['move'], coef_x, coef_y, coef_z
 
 def plot_graph(df, n):
+    #plots the x, y, z changes of particualr move
     m = df.iloc[n]
     print(m)
     x = m['time']
@@ -57,7 +58,6 @@ def plot_graph(df, n):
     plt.plot(x, yy)
     plt.subplot(3, 1, 3)
     plt.plot(x, yz)
-#    plt.legend(['x', 'y', 'z'])
     plt.show
 
 def clean_data(in_filename, out_filename, plot):
@@ -92,8 +92,6 @@ def clean_data(in_filename, out_filename, plot):
     moves['move'] = moves['move'].apply(rename)    
 #    moves = moves.apply(smoothing, axis=1)
     moves = moves.dropna(how = 'any')
-
-#    print(moves)
     
     if(plot is not None):
         plot_graph(moves, plot)
@@ -106,8 +104,6 @@ def clean_data(in_filename, out_filename, plot):
     moves_coeffs[['z3', 'z2', 'z1', 'z0']] = pd.DataFrame(moves_coeffs['z'].values.tolist())
     moves_coeffs = moves_coeffs.drop(['x', 'y', 'z'], axis = 1)
     moves_coeffs = moves_coeffs.dropna(how = 'any') 
-
-#    print(moves_coeffs)
 
     if(out_filename is not None):
         moves_coeffs.to_csv(out_filename)

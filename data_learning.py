@@ -6,12 +6,25 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+OUTPUT_TEMPLATE = (
+    'Bayesian classifier: {bayes:.3g}\n'
+    'kNN classifier:      {knn:.3g}\n'
+    'Subject A:           {subj_a:.3g}\n'
+    'Subject B:           {subj_b:.3g}\n'
+    'Subject C:           {subj_c:.3g}\n'
+    'Subject D:           {subj_d:.3g}\n'
+    'All Subjects:        {subj_all:.3g}\n'
+)
+
 def plot_graph(df, att):
+    #plots the swarmplot of a certain attribut across all moves
     sns.stripplot(x='move', y=att, data=df, jitter=True);
     plt.show()
 
 def main():
     my_filename = "raw_accel.csv"
+    
+    #calls the cleaning function with params: filepath, outputy filename (if desired), and index to plot graph (if desired)
     moves = pd.DataFrame(clean_data(my_filename, None, None))
     X = moves[moves.columns[2:]]
     y = moves['move']
@@ -37,22 +50,32 @@ def main():
     y_b = b_moves['move']
     b_score = knn_model.score(X_b, y_b)
     
-    c_filename = "subject_d.csv"
-    c_moves = pd.DataFrame(clean_data(d_filename, None, None))
-    X_d = d_moves[d_moves.columns[2:]]
-    y_d = d_moves['move']
-    c_score = knn_model.score(X_d, y_d)
     
     c_filename = "subject_c.csv"
     c_moves = pd.DataFrame(clean_data(c_filename, None, None))
     X_c = c_moves[c_moves.columns[2:]]
     y_c = c_moves['move']
     c_score = knn_model.score(X_c, y_c)
+    
+    d_filename = "subject_d.csv"
+    d_moves = pd.DataFrame(clean_data(d_filename, None, None))
+    X_d = d_moves[d_moves.columns[2:]]
+    y_d = d_moves['move']
+    d_score = knn_model.score(X_d, y_d)
 
     others = pd.concat([a_moves, b_moves, c_moves, d_moves])
 
     others_score = knn_model.score(others[others.columns[2:]], others['move'])
-
+    
+    print(OUTPUT_TEMPLATE.format(
+        bayes=my_nb_score,
+        knn=my_knn_score,
+        subj_a = a_score,
+        subj_b = b_score,
+        subj_c = c_score,
+        subj_d = d_score,
+        subj_all = others_score
+    ))
     
 if __name__ == '__main__':
     main()
